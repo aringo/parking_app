@@ -1,0 +1,61 @@
+/* MapView component styles */
+
+.mapContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  z-index: 1;
+}
+
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+  .mapContainer {
+    height: 50vh;
+    min-height: 300px;
+  }
+  
+  .map {
+    min-height: 300px;
+  }
+}
+
+/* Responsive design for tablet devices */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .mapContainer {
+    height: 60vh;
+    min-height: 400px;
+  }
+}
+
+/* Desktop and larger screens */
+@media (min-width: 1025px) {
+  .mapContainer {
+    height: 100vh;
+    min-height: 500px;
+  }
+}
+
+/* Ensure proper sizing within flex containers */
+.mapContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fix for Leaflet marker icons in production builds */
+.map :global(.leaflet-marker-icon) {
+  margin-left: -12px;
+  margin-top: -41px;
+}
+
+.map :global(.leaflet-marker-shadow) {
+  margin-left: -12px;
+  margin-top: -41px;
+}

@@ -1,0 +1,52 @@
+/* Main application layout styles */
+
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.mapContainer {
+  flex: 1;
+  position: relative;
+}
+
+.infoPanel {
+  width: 400px;
+  background: white;
+  border-left: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  overflow-y: auto;
+}
+
+.searchContainer {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: white;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 12px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+  }
+  
+  .infoPanel {
+    width: 100%;
+    height: 300px;
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .searchContainer {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+  }
+}
