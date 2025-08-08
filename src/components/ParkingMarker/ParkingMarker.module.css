@@ -1,0 +1,66 @@
+/* Custom marker styles */
+.customMarker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.markerIcon {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.markerIcon:hover {
+  transform: scale(1.1);
+}
+
+.markerInner {
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Tooltip styles */
+.tooltip {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.tooltipTitle {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1f2937;
+}
+
+.tooltipInfo {
+  color: #4b5563;
+}
+
+.tooltipInfo div {
+  margin-bottom: 2px;
+}
+
+.tooltipInfo div:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .markerIcon {
+    transform: scale(0.9);
+  }
+  
+  .markerIcon:hover {
+    transform: scale(1.0);
+  }
+  
+  .tooltip {
+    font-size: 11px;
+  }
+}

@@ -2,17 +2,25 @@ import React from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import type { LatLngExpression } from 'leaflet';
 import type { MapViewProps } from '../../types';
+import ParkingMarker from '../ParkingMarker';
 import styles from './MapView.module.css';
 
 // Import Leaflet CSS and configuration
 import 'leaflet/dist/leaflet.css';
 import './leafletConfig';
 
-const MapView: React.FC<MapViewProps> = () => {
-  // Props will be used in future tasks for markers and interactions
+const MapView: React.FC<MapViewProps> = ({
+  parkingData,
+  selectedLocation,
+  searchResults,
+  onLocationSelect
+}) => {
   // Default center coordinates (can be overridden by app config)
   const defaultCenter: LatLngExpression = [37.7749, -122.4194];
   const defaultZoom = 13;
+
+  // Determine which locations to display - search results take precedence
+  const locationsToDisplay = searchResults.length > 0 ? searchResults : parkingData;
 
   return (
     <div className={styles.mapContainer}>
@@ -27,7 +35,14 @@ const MapView: React.FC<MapViewProps> = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {/* Parking markers will be added in future tasks */}
+        {locationsToDisplay.map((location) => (
+          <ParkingMarker
+            key={location.id}
+            location={location}
+            isSelected={selectedLocation?.id === location.id}
+            onClick={onLocationSelect}
+          />
+        ))}
       </MapContainer>
     </div>
   );

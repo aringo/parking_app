@@ -26,6 +26,28 @@ vi.mock('react-leaflet', () => ({
       {...props} 
     />
   ),
+  Marker: ({ children, position, icon, eventHandlers, ...props }: any) => (
+    <div 
+      data-testid="marker" 
+      data-position={Array.isArray(position) ? position.join(',') : position}
+      data-icon={icon ? 'custom-icon' : 'default-icon'}
+      onClick={eventHandlers?.click}
+      {...props}
+    >
+      {children}
+    </div>
+  ),
+  Tooltip: ({ children, direction, offset, opacity, ...props }: any) => (
+    <div 
+      data-testid="tooltip" 
+      data-direction={direction}
+      data-offset={Array.isArray(offset) ? offset.join(',') : offset}
+      data-opacity={opacity}
+      {...props}
+    >
+      {children}
+    </div>
+  ),
 }));
 
 // Mock leaflet configuration
