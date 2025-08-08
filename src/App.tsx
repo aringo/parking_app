@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import MapView from './components/MapView';
 import InfoPanel from './components/InfoPanel';
+import SearchBar from './components/SearchBar';
 import type { ParkingLocation } from './types';
 import styles from './App.module.css'
 
@@ -39,10 +40,18 @@ function App() {
     }
   ]);
   const [selectedLocation, setSelectedLocation] = useState<ParkingLocation | null>(null);
-  const [searchResults] = useState<ParkingLocation[]>([]);
+  const [searchResults, setSearchResults] = useState<ParkingLocation[]>([]);
 
   const handleLocationSelect = (location: ParkingLocation) => {
     setSelectedLocation(location);
+  };
+
+  const handleSearchResults = (results: ParkingLocation[]) => {
+    setSearchResults(results);
+  };
+
+  const handleClearSearch = () => {
+    setSearchResults([]);
   };
 
   const handleDirectionsClick = (location: ParkingLocation) => {
@@ -75,8 +84,11 @@ function App() {
     <div className={styles.app}>
       <div className={styles.mapContainer}>
         <div className={styles.searchContainer}>
-          {/* SearchBar component will go here */}
-          <div>Search functionality placeholder</div>
+          <SearchBar
+            parkingData={parkingData}
+            onSearchResults={handleSearchResults}
+            onClearSearch={handleClearSearch}
+          />
         </div>
         <MapView
           parkingData={parkingData}
