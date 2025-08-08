@@ -5,6 +5,9 @@
   height: 100%;
   position: relative;
   overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .map {
@@ -12,41 +15,100 @@
   height: 100%;
   min-height: 400px;
   z-index: 1;
+  /* Improve touch performance */
+  touch-action: pan-x pan-y;
 }
 
 /* Responsive design for mobile devices */
 @media (max-width: 768px) {
   .mapContainer {
-    height: 50vh;
+    height: 100%;
     min-height: 300px;
+    /* Add safe area padding */
+    padding-bottom: env(safe-area-inset-bottom);
   }
   
   .map {
     min-height: 300px;
+    /* Optimize for mobile performance */
+    will-change: transform;
+    /* Improve touch handling */
+    touch-action: pan-x pan-y;
+    /* Prevent text selection during map interaction */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* Improve touch targets for mobile */
+  .map :global(.leaflet-control-zoom) {
+    transform: scale(1.2);
+    transform-origin: top right;
+    /* Add safe area margin */
+    margin-top: env(safe-area-inset-top);
+    margin-right: env(safe-area-inset-right);
+  }
+  
+  .map :global(.leaflet-control-zoom a) {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    font-size: 20px;
+    /* Better touch feedback */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Better touch interaction for markers */
+  .map :global(.leaflet-marker-icon) {
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    /* Improve touch target size */
+    min-width: 32px;
+    min-height: 32px;
+  }
+  
+  .map :global(.leaflet-marker-icon:active) {
+    transform: scale(1.1);
+  }
+  
+  /* Optimize popup positioning for mobile */
+  .map :global(.leaflet-popup) {
+    margin-bottom: 20px;
+  }
+  
+  .map :global(.leaflet-popup-content-wrapper) {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Improve attribution positioning */
+  .map :global(.leaflet-control-attribution) {
+    margin-bottom: env(safe-area-inset-bottom);
+    font-size: 10px;
   }
 }
 
 /* Responsive design for tablet devices */
 @media (min-width: 769px) and (max-width: 1024px) {
   .mapContainer {
-    height: 60vh;
+    height: 100%;
     min-height: 400px;
+  }
+  
+  /* Slightly larger touch targets for tablets */
+  .map :global(.leaflet-control-zoom) {
+    transform: scale(1.1);
+    transform-origin: top right;
   }
 }
 
 /* Desktop and larger screens */
 @media (min-width: 1025px) {
   .mapContainer {
-    height: 100vh;
+    height: 100%;
     min-height: 500px;
   }
-}
-
-/* Ensure proper sizing within flex containers */
-.mapContainer {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 /* Fix for Leaflet marker icons in production builds */
@@ -58,4 +120,43 @@
 .map :global(.leaflet-marker-shadow) {
   margin-left: -12px;
   margin-top: -41px;
+}
+
+/* Improve map loading performance */
+.map :global(.leaflet-tile) {
+  will-change: transform;
+}
+
+/* Better contrast for map controls */
+.map :global(.leaflet-control-zoom) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.map :global(.leaflet-control-zoom a) {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  color: #333;
+}
+
+.map :global(.leaflet-control-zoom a:hover) {
+  background-color: #f4f4f4;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .map :global(.leaflet-control-zoom a) {
+    border-width: 2px;
+    border-color: #000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .map :global(.leaflet-marker-icon) {
+    transition: none;
+  }
+  
+  .map :global(.leaflet-marker-icon:active) {
+    transform: none;
+  }
 }

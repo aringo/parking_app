@@ -4,12 +4,22 @@
 /* Global styles for the Parking Finder application */
 
 :root {
+  /* Default colors - can be overridden by BrandingProvider */
   --primary-color: #2563eb;
   --secondary-color: #64748b;
   --background-color: #ffffff;
   --text-color: #1e293b;
   --border-color: #e2e8f0;
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  
+  /* Branding-specific variables */
+  --background-image: none;
+  --logo-height: 40px;
+  --header-height: 72px;
+  
+  /* Performance-controlled animation variables */
+  --animation-duration: 0.3s;
+  --transition-duration: 0.2s;
 }
 
 * {
@@ -26,10 +36,87 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--background-color);
   color: var(--text-color);
+  
+  /* Background image support */
+  background-image: var(--background-image);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  
+  /* Mobile optimizations */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #root {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  /* Improve mobile performance */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile viewport fixes */
+@media (max-width: 768px) {
+  body {
+    /* Fix for mobile viewport issues */
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background-attachment: scroll; /* Better performance on mobile */
+  }
+  
+  #root {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+}
+
+/* Improve touch targets globally */
+button, 
+[role="button"], 
+input[type="button"], 
+input[type="submit"], 
+input[type="reset"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (max-width: 768px) {
+  button, 
+  [role="button"], 
+  input[type="button"], 
+  input[type="submit"], 
+  input[type="reset"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Improve focus visibility */
+*:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Better scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--border-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
 }

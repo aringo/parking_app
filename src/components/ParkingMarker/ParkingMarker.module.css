@@ -10,32 +10,43 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   position: relative;
+  /* Better touch target */
+  min-width: 28px;
+  min-height: 28px;
 }
 
 .markerIcon:hover {
   transform: scale(1.1);
+  z-index: 1000;
+}
+
+.markerIcon:active {
+  transform: scale(0.95);
 }
 
 .markerInner {
   color: white;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 14px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  user-select: none;
 }
 
 /* Tooltip styles */
 .tooltip {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.4;
+  max-width: 200px;
 }
 
 .tooltipTitle {
   font-weight: 600;
   margin-bottom: 4px;
   color: #1f2937;
+  font-size: 14px;
 }
 
 .tooltipInfo {
@@ -50,17 +61,68 @@
   margin-bottom: 0;
 }
 
-/* Responsive adjustments */
+/* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .markerIcon {
-    transform: scale(0.9);
+    /* Larger touch targets on mobile */
+    min-width: 32px;
+    min-height: 32px;
   }
   
   .markerIcon:hover {
-    transform: scale(1.0);
+    transform: scale(1.05); /* Less aggressive scaling on mobile */
+  }
+  
+  .markerIcon:active {
+    transform: scale(0.9);
+  }
+  
+  .markerInner {
+    font-size: 16px;
   }
   
   .tooltip {
-    font-size: 11px;
+    font-size: 14px;
+    max-width: 180px;
+  }
+  
+  .tooltipTitle {
+    font-size: 15px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .markerIcon {
+    min-width: 30px;
+    min-height: 30px;
+  }
+  
+  .markerInner {
+    font-size: 15px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .markerIcon {
+    border: 2px solid #000 !important;
+  }
+  
+  .markerInner {
+    text-shadow: none;
+    font-weight: 900;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .markerIcon {
+    transition: none;
+  }
+  
+  .markerIcon:hover,
+  .markerIcon:active {
+    transform: none;
   }
 }

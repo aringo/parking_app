@@ -2,7 +2,7 @@ import React from 'react';
 import type { InfoPanelProps, ParkingLocation } from '../../types';
 import styles from './InfoPanel.module.css';
 
-const InfoPanel: React.FC<InfoPanelProps> = ({ selectedLocation, onDirectionsClick }) => {
+const InfoPanel: React.FC<InfoPanelProps> = ({ selectedLocation, onDirectionsClick, onClose }) => {
   const formatLastUpdated = (dateString: string): string => {
     const date = new Date(dateString);
     const now = new Date();
@@ -41,6 +41,18 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectedLocation, onDirectionsCli
   if (!selectedLocation) {
     return (
       <div className={styles.infoPanelContainer}>
+        <div className={styles.mobileHeader}>
+          <div className={styles.dragHandle}></div>
+          {onClose && (
+            <button 
+              className={styles.closeButton}
+              onClick={onClose}
+              aria-label="Close info panel"
+            >
+              ×
+            </button>
+          )}
+        </div>
         <div className={styles.emptyState}>
           <div className={styles.emptyStateIcon}>🅿️</div>
           <h3 className={styles.emptyStateTitle}>Select a Parking Location</h3>
@@ -67,6 +79,18 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectedLocation, onDirectionsCli
 
   return (
     <div className={styles.infoPanelContainer}>
+      <div className={styles.mobileHeader}>
+        <div className={styles.dragHandle}></div>
+        {onClose && (
+          <button 
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label="Close info panel"
+          >
+            ×
+          </button>
+        )}
+      </div>
       <div className={styles.header}>
         <h2 className={styles.locationName}>{selectedLocation.name}</h2>
         <div className={styles.locationType}>

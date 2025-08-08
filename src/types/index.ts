@@ -45,17 +45,27 @@ export interface AppConfig {
   };
 }
 
+// Performance settings interface
+export interface PerformanceSettings {
+  reduceAnimations: boolean;
+  limitMapTiles: boolean;
+  reduceImageQuality: boolean;
+  enableDataSaver: boolean;
+}
+
 // Component prop interfaces
 export interface MapViewProps {
   parkingData: ParkingLocation[];
   selectedLocation: ParkingLocation | null;
   searchResults: ParkingLocation[];
   onLocationSelect: (location: ParkingLocation) => void;
+  performanceSettings?: PerformanceSettings;
 }
 
 export interface InfoPanelProps {
   selectedLocation: ParkingLocation | null;
   onDirectionsClick: (location: ParkingLocation) => void;
+  onClose?: () => void;
 }
 
 export interface SearchBarProps {

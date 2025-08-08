@@ -192,10 +192,10 @@ describe('ParkingMarker', () => {
       </TestMapWrapper>
     );
 
-    // Test unselected marker (24px)
+    // Test unselected marker (28px - updated for better touch targets)
     let markerElement = document.querySelector('.leaflet-marker-icon');
-    expect(markerElement?.innerHTML).toContain('width: 24px');
-    expect(markerElement?.innerHTML).toContain('height: 24px');
+    expect(markerElement?.innerHTML).toContain('width: 28px');
+    expect(markerElement?.innerHTML).toContain('height: 28px');
 
     // Test selected marker (32px)
     rerender(
@@ -209,8 +209,8 @@ describe('ParkingMarker', () => {
     );
 
     markerElement = document.querySelector('.leaflet-marker-icon');
-    expect(markerElement?.innerHTML).toContain('width: 32px');
-    expect(markerElement?.innerHTML).toContain('height: 32px');
+    expect(markerElement?.innerHTML).toContain('width: 36px');
+    expect(markerElement?.innerHTML).toContain('height: 36px');
   });
 
   it('handles edge cases for availability calculation', () => {

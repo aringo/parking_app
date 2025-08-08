@@ -1,0 +1,21 @@
+{
+  "branding": {
+    "name": "Coastal Town Parking",
+    "logo": "/logo.png",
+    "primaryColor": "#1e40af",
+    "secondaryColor": "#64748b",
+    "backgroundImage": "/background.jpg",
+    "customCSS": "/* Custom styles for enhanced branding */ .app { border-radius: 8px; margin: 10px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }"
+  },
+  "map": {
+    "center": {
+      "lat": 37.7749,
+      "lng": -122.4194
+    },
+    "zoom": 14
+  },
+  "dataSource": {
+    "url": "/api/parking-data.json",
+    "refreshInterval": 300000
+  }
+}

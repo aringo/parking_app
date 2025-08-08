@@ -1,49 +1,64 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MapView from './components/MapView';
 import InfoPanel from './components/InfoPanel';
 import SearchBar from './components/SearchBar';
+import { RefreshIndicator } from './components/RefreshIndicator';
+import { BrandingHeader } from './components/BrandingHeader';
+import { BrandingProvider } from './contexts/BrandingContext';
+import { useAutoRefresh } from './hooks/useAutoRefresh';
+import { usePerformanceOptimization } from './hooks/usePerformanceOptimization';
 import type { ParkingLocation } from './types';
 import styles from './App.module.css'
 
-function App() {
-  // Sample data for testing the parking marker system
-  const [parkingData] = useState<ParkingLocation[]>([
-    {
-      id: 'test-1',
-      name: 'Main Street Parking',
-      address: '123 Main St',
-      coordinates: { lat: 37.7749, lng: -122.4194 },
-      capacity: { total: 50, available: 25 },
-      rules: { timeLimit: '2 hours', cost: 'Free' },
-      type: 'street',
-      lastUpdated: '2024-01-01T12:00:00Z',
-    },
-    {
-      id: 'test-2',
-      name: 'City Hall Lot',
-      address: '456 Government Ave',
-      coordinates: { lat: 37.7849, lng: -122.4094 },
-      capacity: { total: 100, available: 5 },
-      rules: { timeLimit: '4 hours', cost: '$2/hour' },
-      type: 'lot',
-      lastUpdated: '2024-01-01T12:00:00Z',
-    },
-    {
-      id: 'test-3',
-      name: 'Full Parking Garage',
-      address: '789 Business Blvd',
-      coordinates: { lat: 37.7649, lng: -122.4294 },
-      capacity: { total: 200, available: 0 },
-      rules: { timeLimit: 'All day', cost: '$5/hour' },
-      type: 'garage',
-      lastUpdated: '2024-01-01T12:00:00Z',
-    }
-  ]);
+function AppContent() {
+  // Use auto-refresh hook to manage parking data
+  const {
+    parkingData,
+    refreshState,
+    refresh,
+    isDataFresh,
+    timeUntilNextRefresh,
+  } = useAutoRefresh({
+    refreshInterval: 5 * 60 * 1000, // 5 minutes
+    autoStart: true,
+  });
+
   const [selectedLocation, setSelectedLocation] = useState<ParkingLocation | null>(null);
   const [searchResults, setSearchResults] = useState<ParkingLocation[]>([]);
+  const [isInfoPanelExpanded, setIsInfoPanelExpanded] = useState(false);
+
+  // Performance optimization for mobile and slow connections
+  const { performanceSettings, isSlowConnection } = usePerformanceOptimization();
+
+  // Preserve selected location during refresh if it still exists in new data
+  useEffect(() => {
+    if (selectedLocation && parkingData.length > 0) {
+      const updatedLocation = parkingData.find(loc => loc.id === selectedLocation.id);
+      if (updatedLocation) {
+        setSelectedLocation(updatedLocation);
+      } else {
+        // Location no longer exists, clear selection
+        setSelectedLocation(null);
+      }
+    }
+  }, [parkingData, selectedLocation]);
+
+  // Clear search results if they no longer exist in updated data
+  useEffect(() => {
+    if (searchResults.length > 0 && parkingData.length > 0) {
+      const validResults = searchResults.filter(result => 
+        parkingData.some(loc => loc.id === result.id)
+      );
+      if (validResults.length !== searchResults.length) {
+        setSearchResults(validResults);
+      }
+    }
+  }, [parkingData, searchResults]);
 
   const handleLocationSelect = (location: ParkingLocation) => {
     setSelectedLocation(location);
+    // Auto-expand info panel on mobile when location is selected
+    setIsInfoPanelExpanded(true);
   };
 
   const handleSearchResults = (results: ParkingLocation[]) => {
@@ -80,31 +95,63 @@ function App() {
     }
   };
 
+  const toggleInfoPanel = () => {
+    setIsInfoPanelExpanded(!isInfoPanelExpanded);
+  };
+
   return (
     <div className={styles.app}>
-      <div className={styles.mapContainer}>
-        <div className={styles.searchContainer}>
-          <SearchBar
+      <BrandingHeader className={styles.header} />
+      <div className={styles.mainContent}>
+        <div className={styles.mapContainer}>
+          <div className={styles.searchContainer}>
+            <SearchBar
+              parkingData={parkingData}
+              onSearchResults={handleSearchResults}
+              onClearSearch={handleClearSearch}
+            />
+          </div>
+          <div className={styles.refreshContainer}>
+            <RefreshIndicator
+              refreshState={refreshState}
+              onRefresh={refresh}
+              timeUntilNextRefresh={timeUntilNextRefresh}
+              isDataFresh={isDataFresh}
+            />
+          </div>
+          <MapView
             parkingData={parkingData}
-            onSearchResults={handleSearchResults}
-            onClearSearch={handleClearSearch}
+            selectedLocation={selectedLocation}
+            searchResults={searchResults}
+            onLocationSelect={handleLocationSelect}
+            performanceSettings={performanceSettings}
           />
         </div>
-        <MapView
-          parkingData={parkingData}
-          selectedLocation={selectedLocation}
-          searchResults={searchResults}
-          onLocationSelect={handleLocationSelect}
-        />
-      </div>
-      <div className={styles.infoPanel}>
-        <InfoPanel
-          selectedLocation={selectedLocation}
-          onDirectionsClick={handleDirectionsClick}
-        />
+        <div className={`${styles.infoPanel} ${isInfoPanelExpanded ? styles.expanded : ''}`}>
+          <InfoPanel
+            selectedLocation={selectedLocation}
+            onDirectionsClick={handleDirectionsClick}
+            onClose={() => setIsInfoPanelExpanded(false)}
+          />
+        </div>
+        <button 
+          className={styles.mobileToggle}
+          onClick={toggleInfoPanel}
+          aria-label={isInfoPanelExpanded ? "Close info panel" : "Open info panel"}
+        >
+          {isInfoPanelExpanded ? '×' : 'ℹ'}
+        </button>
       </div>
     </div>
   )
+}
+
+function App() {
+  return (
+    <BrandingProvider>
+      <AppContent />
+    </BrandingProvider>
+  );
 }
 
 export default App

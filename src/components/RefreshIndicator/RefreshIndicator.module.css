@@ -1,0 +1,162 @@
+.refreshIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-secondary, #f8f9fa);
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.refreshIndicator.fresh {
+  border-color: var(--success-color, #28a745);
+  background: var(--success-bg, #d4edda);
+}
+
+.refreshIndicator.stale {
+  border-color: var(--warning-color, #ffc107);
+  background: var(--warning-bg, #fff3cd);
+}
+
+.refreshIndicator.error {
+  border-color: var(--error-color, #dc3545);
+  background: var(--error-bg, #f8d7da);
+}
+
+.refreshIndicator.refreshing {
+  border-color: var(--info-color, #17a2b8);
+  background: var(--info-bg, #d1ecf1);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.statusIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--info-color, #17a2b8);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.errorIcon {
+  color: var(--error-color, #dc3545);
+  font-size: 14px;
+}
+
+.freshIcon {
+  color: var(--success-color, #28a745);
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.statusText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.primaryText {
+  font-weight: 500;
+  color: var(--text-primary, #212529);
+}
+
+.secondaryText {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6c757d);
+}
+
+.errorText {
+  font-size: 0.75rem;
+  color: var(--error-color, #dc3545);
+  font-weight: 500;
+}
+
+.refreshButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color, #dee2e6);
+  border-radius: 4px;
+  background: var(--bg-primary, #ffffff);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.refreshButton:hover:not(:disabled) {
+  background: var(--bg-hover, #f8f9fa);
+  border-color: var(--border-hover, #adb5bd);
+}
+
+.refreshButton:active:not(:disabled) {
+  background: var(--bg-active, #e9ecef);
+}
+
+.refreshButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refreshIcon {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-primary, #495057);
+  transition: transform 0.2s ease;
+}
+
+.refreshIcon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .refreshIndicator {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .statusText {
+    gap: 1px;
+  }
+  
+  .secondaryText,
+  .errorText {
+    font-size: 0.7rem;
+  }
+  
+  .refreshButton {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .refreshIcon {
+    font-size: 14px;
+  }
+}

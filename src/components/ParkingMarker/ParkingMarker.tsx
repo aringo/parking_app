@@ -32,7 +32,7 @@ const getMarkerColor = (status: AvailabilityStatus): string => {
 // Create custom marker icon
 const createCustomIcon = (status: AvailabilityStatus, isSelected: boolean): DivIcon => {
   const color = getMarkerColor(status);
-  const size = isSelected ? 32 : 24;
+  const size = isSelected ? 36 : 28; // Larger for better touch targets
   const borderWidth = isSelected ? 3 : 2;
   
   return new DivIcon({
@@ -42,7 +42,9 @@ const createCustomIcon = (status: AvailabilityStatus, isSelected: boolean): DivI
         width: ${size}px;
         height: ${size}px;
         border: ${borderWidth}px solid white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+        transition: transform 0.1s ease;
       ">
         <div class="${styles.markerInner}">P</div>
       </div>
