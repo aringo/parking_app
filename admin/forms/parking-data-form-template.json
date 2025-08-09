@@ -1,0 +1,80 @@
+{
+  "title": "Parking Location Data Update",
+  "description": "Use this form to add or update parking location information. All fields marked with * are required.",
+  "questions": [
+    {
+      "title": "Location Name *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Enter the name of the parking location (e.g., 'Main Street Parking', 'City Hall Lot')"
+    },
+    {
+      "title": "Address *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Full street address of the parking location"
+    },
+    {
+      "title": "Latitude *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Latitude coordinate (decimal format, e.g., 40.7128). Use Google Maps to find coordinates."
+    },
+    {
+      "title": "Longitude *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Longitude coordinate (decimal format, e.g., -74.0060). Use Google Maps to find coordinates."
+    },
+    {
+      "title": "Total Capacity *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Total number of parking spaces available"
+    },
+    {
+      "title": "Available Spaces",
+      "type": "TEXT",
+      "required": false,
+      "helpText": "Current number of available spaces (leave blank if same as total capacity)"
+    },
+    {
+      "title": "Location Type *",
+      "type": "MULTIPLE_CHOICE",
+      "required": true,
+      "choices": ["Street", "Lot", "Structure", "Garage"],
+      "helpText": "Select the type of parking location"
+    },
+    {
+      "title": "Time Limit",
+      "type": "TEXT",
+      "required": false,
+      "helpText": "Parking time limit (e.g., '2 hours', 'No limit')"
+    },
+    {
+      "title": "Cost",
+      "type": "TEXT",
+      "required": false,
+      "helpText": "Parking cost information (e.g., 'Free', '$2/hour', '$5/day')"
+    },
+    {
+      "title": "Restrictions",
+      "type": "PARAGRAPH_TEXT",
+      "required": false,
+      "helpText": "Any parking restrictions, separated by commas (e.g., 'No overnight parking, Permit required after 6 PM')"
+    },
+    {
+      "title": "Operating Hours",
+      "type": "TEXT",
+      "required": false,
+      "helpText": "Hours when parking is available (e.g., '24/7', '6 AM - 10 PM')"
+    }
+  ],
+  "settings": {
+    "collectEmail": true,
+    "requireSignIn": true,
+    "limitOneResponse": false,
+    "showProgressBar": true,
+    "confirmationMessage": "Thank you! Your parking data update has been submitted and will be processed shortly."
+  }
+}

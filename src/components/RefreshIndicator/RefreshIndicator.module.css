@@ -138,25 +138,100 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .refreshIndicator {
-    padding: 6px 8px;
+    padding: 8px 10px;
     font-size: 0.8rem;
+    border-radius: 12px;
+    /* Better mobile backdrop */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(248, 249, 250, 0.95);
+    /* Better performance */
+    contain: layout style;
+  }
+  
+  .refreshIndicator.fresh {
+    background: rgba(212, 237, 218, 0.95);
+  }
+  
+  .refreshIndicator.stale {
+    background: rgba(255, 243, 205, 0.95);
+  }
+  
+  .refreshIndicator.error {
+    background: rgba(248, 215, 218, 0.95);
+  }
+  
+  .refreshIndicator.refreshing {
+    background: rgba(209, 236, 241, 0.95);
+  }
+  
+  .status {
+    gap: 6px;
   }
   
   .statusText {
-    gap: 1px;
+    gap: 2px;
+  }
+  
+  .primaryText {
+    font-size: 0.8rem;
+    font-weight: 500;
   }
   
   .secondaryText,
   .errorText {
     font-size: 0.7rem;
+    line-height: 1.2;
   }
   
   .refreshButton {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    /* Better touch interaction */
+    touch-action: manipulation;
+    /* Improve visual feedback */
+    transition: background-color 0.1s ease, transform 0.1s ease;
+  }
+  
+  .refreshButton:active:not(:disabled) {
+    transform: scale(0.95);
+    background: var(--bg-active, #e0e0e0);
   }
   
   .refreshIcon {
-    font-size: 14px;
+    font-size: 16px;
+  }
+  
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+  }
+  
+  /* Very small screens */
+  @media (max-width: 320px) {
+    .refreshIndicator {
+      padding: 6px 8px;
+      font-size: 0.75rem;
+    }
+    
+    .refreshButton {
+      width: 28px;
+      height: 28px;
+    }
+    
+    .refreshIcon {
+      font-size: 14px;
+    }
+    
+    .primaryText {
+      font-size: 0.75rem;
+    }
+    
+    .secondaryText,
+    .errorText {
+      font-size: 0.65rem;
+    }
   }
 }

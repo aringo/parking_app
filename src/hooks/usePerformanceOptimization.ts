@@ -45,7 +45,7 @@ export const usePerformanceOptimization = () => {
                                 info.effectiveType === 'slow-2g' ||
                                 (info.downlink && info.downlink < 1.5);
         
-        const isHighLatency = info.rtt && info.rtt > 300;
+        // const isHighLatency = info.rtt && info.rtt > 300;
         
         setPerformanceSettings({
           reduceAnimations: isSlowConnection || info.saveData || false,
@@ -97,7 +97,23 @@ export const usePerformanceOptimization = () => {
       root.style.setProperty('--animation-duration', '0.3s');
       root.style.setProperty('--transition-duration', '0.2s');
     }
-  }, [performanceSettings.reduceAnimations]);
+    
+    // Apply additional mobile performance optimizations
+    if (performanceSettings.limitMapTiles) {
+      root.style.setProperty('--map-tile-fade-duration', '0s');
+      root.style.setProperty('--map-zoom-animation', 'none');
+    } else {
+      root.style.setProperty('--map-tile-fade-duration', '0.2s');
+      root.style.setProperty('--map-zoom-animation', 'ease');
+    }
+    
+    // Optimize image loading for slow connections
+    if (performanceSettings.reduceImageQuality) {
+      root.style.setProperty('--image-rendering', 'optimizeSpeed');
+    } else {
+      root.style.setProperty('--image-rendering', 'optimizeQuality');
+    }
+  }, [performanceSettings]);
 
   return {
     networkInfo,

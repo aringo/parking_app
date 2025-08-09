@@ -11,16 +11,18 @@ export const BrandingHeader: React.FC<BrandingHeaderProps> = ({ className }) => 
 
   if (isLoading || !config) {
     return (
-      <div className={`${styles.header} ${className || ''}`}>
-        <div className={styles.loading}>Loading...</div>
-      </div>
+      <header className={`${styles.header} ${className || ''}`} role="banner">
+        <div className={styles.loading} aria-live="polite">
+          Loading application...
+        </div>
+      </header>
     );
   }
 
   const { branding } = config;
 
   return (
-    <div className={`${styles.header} ${className || ''}`}>
+    <header className={`${styles.header} ${className || ''}`} role="banner">
       <div className={styles.brandingContent}>
         {branding.logo && (
           <img 
@@ -33,9 +35,9 @@ export const BrandingHeader: React.FC<BrandingHeaderProps> = ({ className }) => 
             }}
           />
         )}
-        <h1 className={styles.title}>{branding.name}</h1>
+        <h1 className={styles.title}>{branding.name} Parking Finder</h1>
       </div>
-    </div>
+    </header>
   );
 };
 

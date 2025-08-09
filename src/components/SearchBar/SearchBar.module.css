@@ -140,6 +140,8 @@
 @media (max-width: 768px) {
   .searchContainer {
     max-width: 100%;
+    /* Improve performance */
+    contain: layout style;
   }
   
   .searchInput {
@@ -148,39 +150,112 @@
     padding-right: 50px;
     border-radius: 12px;
     min-height: 48px; /* Better touch target */
+    /* Improve touch interaction */
+    touch-action: manipulation;
+    /* Better mobile appearance */
+    -webkit-appearance: none;
+    appearance: none;
+    /* Improve performance */
+    will-change: auto;
+  }
+  
+  .searchInput:focus {
+    /* Prevent zoom on focus */
+    transform: translateZ(0);
+    /* Better focus indication */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
   }
   
   .clearButton {
     right: 16px;
     padding: 8px;
-    min-width: 32px;
-    min-height: 32px;
+    min-width: 36px;
+    min-height: 36px;
     font-size: 18px;
+    /* Better touch interaction */
+    touch-action: manipulation;
+    /* Improve visual feedback */
+    transition: background-color 0.1s ease, transform 0.1s ease;
+  }
+  
+  .clearButton:active {
+    transform: scale(0.95);
+    background-color: #f0f0f0;
   }
   
   .suggestionItem {
     padding: 16px 18px;
-    min-height: 48px; /* Better touch target */
+    min-height: 52px; /* Better touch target */
     display: flex;
     flex-direction: column;
     justify-content: center;
+    /* Better touch interaction */
+    touch-action: manipulation;
+    /* Improve visual feedback */
+    transition: background-color 0.1s ease;
+  }
+  
+  .suggestionItem:active {
+    background-color: #e3f2fd;
+    transform: scale(0.98);
   }
   
   .suggestionsList {
     max-height: 250px;
     border-radius: 12px;
+    /* Improve scrolling performance */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    /* Better backdrop */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
   }
   
   .suggestionName {
     font-size: 15px;
+    font-weight: 600;
   }
   
   .suggestionAddress {
     font-size: 13px;
+    margin-top: 2px;
   }
   
   .suggestionCapacity {
     font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+  
+  .noResults {
+    border-radius: 12px;
+    padding: 20px 18px;
+    font-size: 14px;
+    /* Better backdrop */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+  }
+  
+  /* Very small screens optimization */
+  @media (max-width: 320px) {
+    .searchInput {
+      padding: 14px 16px;
+      padding-right: 48px;
+      font-size: 15px;
+    }
+    
+    .clearButton {
+      right: 14px;
+      min-width: 32px;
+      min-height: 32px;
+    }
+    
+    .suggestionItem {
+      padding: 14px 16px;
+      min-height: 48px;
+    }
   }
 }
 

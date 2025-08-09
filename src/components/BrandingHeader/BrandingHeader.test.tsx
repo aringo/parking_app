@@ -114,9 +114,9 @@ describe('BrandingHeader', () => {
 
     renderWithBranding(<BrandingHeader className="custom-class" />);
 
-    await screen.findByText('Coastal Town Parking');
+    await screen.findByText('Coastal Town Parking', { exact: false });
 
-    const header = screen.getByText('Coastal Town Parking').closest('.custom-class');
+    const header = screen.getByText('Coastal Town Parking', { exact: false }).closest('.custom-class');
     expect(header).toHaveClass('custom-class');
   });
 
@@ -126,8 +126,8 @@ describe('BrandingHeader', () => {
     renderWithBranding(<BrandingHeader />);
 
     // Should fall back to default config
-    await screen.findByText('Parking Finder');
+    await screen.findByText('Parking Finder', { exact: false });
 
-    expect(screen.getByText('Parking Finder')).toBeInTheDocument();
+    expect(screen.getByText('Parking Finder', { exact: false })).toBeInTheDocument();
   });
 });

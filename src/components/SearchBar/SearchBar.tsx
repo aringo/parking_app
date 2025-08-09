@@ -123,6 +123,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div className={styles.searchContainer}>
+      <div 
+        id="search-instructions" 
+        className="sr-only"
+        aria-live="polite"
+      >
+        {searchTerm.trim() 
+          ? `${filteredResults.length} parking locations found. Use arrow keys to navigate suggestions, Enter to select.`
+          : "Type to search parking locations by name, address, or type."
+        }
+      </div>
       <div className={styles.searchInputContainer}>
         <input
           type="text"
@@ -133,10 +143,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
           onKeyDown={handleKeyDown}
           placeholder="Search parking locations..."
           className={styles.searchInput}
-          aria-label="Search parking locations"
+          aria-label="Search parking locations by name, address, or type"
           aria-expanded={showSuggestions}
           aria-haspopup="listbox"
+          aria-owns={showSuggestions ? "search-suggestions" : undefined}
+          aria-activedescendant={selectedSuggestionIndex >= 0 ? `suggestion-${selectedSuggestionIndex}` : undefined}
+          aria-describedby="search-instructions"
           role="combobox"
+          autoComplete="off"
         />
         {searchTerm && (
           <button
@@ -152,6 +166,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
       {showSuggestions && suggestions.length > 0 && (
         <ul 
+          id="search-suggestions"
           className={styles.suggestionsList}
           role="listbox"
           aria-label="Search suggestions"
@@ -159,12 +174,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
           {suggestions.map((location, index) => (
             <li
               key={location.id}
+              id={`suggestion-${index}`}
               onClick={() => handleSuggestionClick(location)}
               className={`${styles.suggestionItem} ${
                 index === selectedSuggestionIndex ? styles.selected : ''
               }`}
               role="option"
               aria-selected={index === selectedSuggestionIndex}
+              aria-label={`${location.name}, ${location.address}, ${location.capacity.available} of ${location.capacity.total} spaces available`}
             >
               <div className={styles.suggestionName}>
                 {highlightSearchTerm(location.name, searchTerm)}
@@ -181,7 +198,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
       )}
 
       {showSuggestions && searchTerm.trim() && suggestions.length === 0 && (
-        <div className={styles.noResults}>
+        <div 
+          className={styles.noResults}
+          role="status"
+          aria-live="polite"
+          aria-label="No search results"
+        >
           No parking locations found for "{searchTerm}"
         </div>
       )}

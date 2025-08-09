@@ -18,14 +18,14 @@ const getAvailabilityStatus = (available: number, total: number): AvailabilitySt
 const getMarkerColor = (status: AvailabilityStatus): string => {
   switch (status) {
     case 'available':
-      return '#22c55e'; // Green
+      return '#059669'; // WCAG AA compliant green
     case 'limited':
-      return '#f59e0b'; // Orange
+      return '#d97706'; // WCAG AA compliant orange
     case 'full':
-      return '#ef4444'; // Red
+      return '#dc2626'; // WCAG AA compliant red
     case 'unknown':
     default:
-      return '#6b7280'; // Gray
+      return '#475569'; // WCAG AA compliant gray
   }
 };
 
@@ -96,10 +96,24 @@ const ParkingMarker: React.FC<ParkingMarkerProps> = ({
       position={[location.coordinates.lat, location.coordinates.lng]}
       icon={customIcon}
       eventHandlers={{
-        click: handleClick
+        click: handleClick,
+        keydown: (e: any) => {
+          if (e.originalEvent.key === 'Enter' || e.originalEvent.key === ' ') {
+            e.originalEvent.preventDefault();
+            handleClick();
+          }
+        }
       }}
+      aria-label={`${location.name} parking location. ${location.capacity.available} of ${location.capacity.total} spaces available. Status: ${availabilityStatus}. Click for details.`}
+      role="button"
+      tabIndex={0}
     >
-      <Tooltip direction="top" offset={[0, -10]} opacity={0.9}>
+      <Tooltip 
+        direction="top" 
+        offset={[0, -10]} 
+        opacity={0.9}
+        aria-hidden="true"
+      >
         {getTooltipContent()}
       </Tooltip>
     </Marker>

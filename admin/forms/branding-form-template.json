@@ -1,0 +1,80 @@
+{
+  "title": "Parking Finder Branding Configuration",
+  "description": "Use this form to update the branding and configuration for your Parking Finder app. Changes will be reflected in the live application after processing.",
+  "questions": [
+    {
+      "title": "Town/City Name *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Enter the name of your town or city as it should appear in the app"
+    },
+    {
+      "title": "Logo Upload",
+      "type": "FILE_UPLOAD",
+      "required": false,
+      "helpText": "Upload your town/city logo (PNG, JPG, or SVG format, max 2MB). Leave blank to use text-only branding.",
+      "fileTypes": ["image/png", "image/jpeg", "image/svg+xml"],
+      "maxFileSize": 2097152
+    },
+    {
+      "title": "Primary Color *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Primary brand color in hex format (e.g., #2563eb). This will be used for buttons and highlights.",
+      "validation": {
+        "pattern": "^#[0-9A-Fa-f]{6}$",
+        "errorMessage": "Please enter a valid hex color code (e.g., #2563eb)"
+      }
+    },
+    {
+      "title": "Secondary Color *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Secondary color in hex format (e.g., #64748b). This will be used for text and borders.",
+      "validation": {
+        "pattern": "^#[0-9A-Fa-f]{6}$",
+        "errorMessage": "Please enter a valid hex color code (e.g., #64748b)"
+      }
+    },
+    {
+      "title": "Background Image Upload",
+      "type": "FILE_UPLOAD",
+      "required": false,
+      "helpText": "Upload a background image for the app (PNG or JPG format, max 5MB). Leave blank for solid color background.",
+      "fileTypes": ["image/png", "image/jpeg"],
+      "maxFileSize": 5242880
+    },
+    {
+      "title": "Map Center Latitude *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Latitude for the default map center (decimal format, e.g., 40.7128)"
+    },
+    {
+      "title": "Map Center Longitude *",
+      "type": "TEXT",
+      "required": true,
+      "helpText": "Longitude for the default map center (decimal format, e.g., -74.0060)"
+    },
+    {
+      "title": "Default Zoom Level",
+      "type": "MULTIPLE_CHOICE",
+      "required": false,
+      "choices": ["10", "11", "12", "13", "14", "15", "16"],
+      "helpText": "Default zoom level for the map (14 is recommended for most towns)"
+    },
+    {
+      "title": "Custom CSS",
+      "type": "PARAGRAPH_TEXT",
+      "required": false,
+      "helpText": "Advanced: Custom CSS styles to override default styling. Leave blank unless you have specific styling needs."
+    }
+  ],
+  "settings": {
+    "collectEmail": true,
+    "requireSignIn": true,
+    "limitOneResponse": false,
+    "showProgressBar": true,
+    "confirmationMessage": "Thank you! Your branding configuration has been submitted and will be applied to the app shortly."
+  }
+}

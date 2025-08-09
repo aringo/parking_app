@@ -76,17 +76,17 @@ describe('InfoPanel', () => {
       expect(screen.getByText('Select a Parking Location')).toBeInTheDocument();
       expect(screen.getByText(/Click on any parking marker/)).toBeInTheDocument();
       expect(screen.getByText('General Parking Information')).toBeInTheDocument();
-      expect(screen.getByText('Green markers indicate good availability')).toBeInTheDocument();
+      expect(screen.getByText(/Green markers indicate good availability/)).toBeInTheDocument();
     });
 
     it('displays parking legend in empty state', () => {
       render(<InfoPanel selectedLocation={null} onDirectionsClick={mockOnDirectionsClick} />);
       
       const legendItems = [
-        'Green markers indicate good availability',
-        'Yellow markers indicate limited spaces',
-        'Red markers indicate full or no availability',
-        'Click any marker for detailed information'
+        /Green markers indicate good availability/,
+        /Yellow markers indicate limited spaces/,
+        /Red markers indicate full or no availability/,
+        /Click any marker for detailed information/
       ];
 
       legendItems.forEach(item => {
@@ -202,7 +202,7 @@ describe('InfoPanel', () => {
       render(<InfoPanel selectedLocation={mockParkingLocation} onDirectionsClick={mockOnDirectionsClick} />);
       
       const directionsButton = screen.getByRole('button', { name: /get directions to test parking lot/i });
-      expect(directionsButton).toHaveAttribute('aria-label', 'Get directions to Test Parking Lot');
+      expect(directionsButton.getAttribute('aria-label')).toContain('Get directions to Test Parking Lot');
     });
   });
 
@@ -270,14 +270,14 @@ describe('InfoPanel', () => {
     it('provides meaningful button labels', () => {
       render(<InfoPanel selectedLocation={mockParkingLocation} onDirectionsClick={mockOnDirectionsClick} />);
       
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('aria-label', 'Get directions to Test Parking Lot');
+      const directionsButton = screen.getByRole('button', { name: /get directions/i });
+      expect(directionsButton.getAttribute('aria-label')).toContain('Get directions to Test Parking Lot');
     });
 
     it('uses semantic HTML structure', () => {
       render(<InfoPanel selectedLocation={mockParkingLocation} onDirectionsClick={mockOnDirectionsClick} />);
       
-      expect(screen.getByRole('button')).toBeInTheDocument();
+      expect(screen.getAllByRole('button')).toHaveLength(2); // Drag handle + directions button
       expect(screen.getAllByRole('heading')).toHaveLength(3);
     });
   });

@@ -401,7 +401,7 @@ describe('SearchBar', () => {
       renderSearchBar();
       
       const searchInput = screen.getByRole('combobox');
-      expect(searchInput).toHaveAttribute('aria-label', 'Search parking locations');
+      expect(searchInput.getAttribute('aria-label')).toBe('Search parking locations by name, address, or type');
       expect(searchInput).toHaveAttribute('aria-expanded', 'false');
       expect(searchInput).toHaveAttribute('aria-haspopup', 'listbox');
     });

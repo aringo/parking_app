@@ -6,6 +6,7 @@ export interface DataFetcherConfig {
   maxRetries: number;
   retryDelay: number;
   cacheExpiry: number; // milliseconds
+  offlineCacheExpiry: number; // milliseconds - longer expiry when offline
 }
 
 export interface CachedData<T> {
@@ -26,6 +27,7 @@ export class DataFetcher {
       maxRetries: 3,
       retryDelay: 1000, // 1 second
       cacheExpiry: 5 * 60 * 1000, // 5 minutes
+      offlineCacheExpiry: 24 * 60 * 60 * 1000, // 24 hours when offline
       ...config,
     };
   }
@@ -35,6 +37,31 @@ export class DataFetcher {
    */
   async fetchParkingData(): Promise<ParkingLocation[]> {
     const cacheKey = this.PARKING_DATA_KEY;
+    const isOffline = this.isOffline();
+    
+    // If offline, immediately return cached data if available
+    if (isOffline) {
+      const cachedData = this.getCachedData<ParkingLocation[]>(cacheKey);
+      if (cachedData && this.isCacheValid(cacheKey, true)) {
+        console.info('Using cached parking data (offline mode) from', new Date(cachedData.timestamp));
+        return cachedData.data;
+      } else if (cachedData) {
+        console.warn('Cached parking data is stale, but using it due to offline mode');
+        return cachedData.data;
+      } else {
+        console.error('No cached parking data available in offline mode');
+        return [];
+      }
+    }
+    
+    // Check if we have valid cached data and can skip network request
+    if (this.isCacheValid(cacheKey, false)) {
+      const cachedData = this.getCachedData<ParkingLocation[]>(cacheKey);
+      if (cachedData) {
+        console.info('Using valid cached parking data from', new Date(cachedData.timestamp));
+        return cachedData.data;
+      }
+    }
     
     try {
       // Try to fetch fresh data
@@ -55,10 +82,10 @@ export class DataFetcher {
     } catch (error) {
       console.warn('Failed to fetch parking data:', error);
       
-      // Fall back to cached data
+      // Fall back to cached data (even if stale)
       const cachedData = this.getCachedData<ParkingLocation[]>(cacheKey);
       if (cachedData) {
-        console.info('Using cached parking data from', new Date(cachedData.timestamp));
+        console.info('Using cached parking data (fallback) from', new Date(cachedData.timestamp));
         return cachedData.data;
       }
       
@@ -73,6 +100,28 @@ export class DataFetcher {
    */
   async fetchAppConfig(): Promise<AppConfig | null> {
     const cacheKey = this.CONFIG_DATA_KEY;
+    const isOffline = this.isOffline();
+    
+    // If offline, immediately return cached config if available
+    if (isOffline) {
+      const cachedData = this.getCachedData<AppConfig>(cacheKey);
+      if (cachedData) {
+        console.info('Using cached app config (offline mode) from', new Date(cachedData.timestamp));
+        return cachedData.data;
+      } else {
+        console.error('No cached app config available in offline mode');
+        return null;
+      }
+    }
+    
+    // Check if we have valid cached config and can skip network request
+    if (this.isCacheValid(cacheKey, false)) {
+      const cachedData = this.getCachedData<AppConfig>(cacheKey);
+      if (cachedData) {
+        console.info('Using valid cached app config from', new Date(cachedData.timestamp));
+        return cachedData.data;
+      }
+    }
     
     try {
       // Try to fetch fresh config
@@ -93,10 +142,10 @@ export class DataFetcher {
     } catch (error) {
       console.warn('Failed to fetch app config:', error);
       
-      // Fall back to cached config
+      // Fall back to cached config (even if stale)
       const cachedData = this.getCachedData<AppConfig>(cacheKey);
       if (cachedData) {
-        console.info('Using cached app config from', new Date(cachedData.timestamp));
+        console.info('Using cached app config (fallback) from', new Date(cachedData.timestamp));
         return cachedData.data;
       }
       
@@ -109,12 +158,20 @@ export class DataFetcher {
   /**
    * Check if cached data is still valid
    */
-  isCacheValid(cacheKey: string): boolean {
+  isCacheValid(cacheKey: string, isOffline: boolean = false): boolean {
     const cachedData = this.getCachedData(cacheKey);
     if (!cachedData) return false;
     
     const age = Date.now() - cachedData.timestamp;
-    return age < this.config.cacheExpiry;
+    const expiry = isOffline ? this.config.offlineCacheExpiry : this.config.cacheExpiry;
+    return age < expiry;
+  }
+
+  /**
+   * Check if we're currently offline
+   */
+  private isOffline(): boolean {
+    return !navigator.onLine;
   }
 
   /**

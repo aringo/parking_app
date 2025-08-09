@@ -136,7 +136,7 @@ describe('ParkingMarker', () => {
 
     // Test available status (green)
     let markerElement = document.querySelector('.leaflet-marker-icon');
-    expect(markerElement?.innerHTML).toContain('#22c55e'); // Green color
+    expect(markerElement?.innerHTML).toContain('#059669'); // Green color
 
     // Test full status (red)
     rerender(
@@ -150,7 +150,7 @@ describe('ParkingMarker', () => {
     );
 
     markerElement = document.querySelector('.leaflet-marker-icon');
-    expect(markerElement?.innerHTML).toContain('#ef4444'); // Red color
+    expect(markerElement?.innerHTML).toContain('#dc2626'); // Red color
 
     // Test limited status (orange)
     rerender(
@@ -164,7 +164,7 @@ describe('ParkingMarker', () => {
     );
 
     markerElement = document.querySelector('.leaflet-marker-icon');
-    expect(markerElement?.innerHTML).toContain('#f59e0b'); // Orange color
+    expect(markerElement?.innerHTML).toContain('#d97706'); // Orange color
 
     // Test unknown status (gray)
     rerender(
@@ -178,7 +178,7 @@ describe('ParkingMarker', () => {
     );
 
     markerElement = document.querySelector('.leaflet-marker-icon');
-    expect(markerElement?.innerHTML).toContain('#6b7280'); // Gray color
+    expect(markerElement?.innerHTML).toContain('#475569'); // Gray color
   });
 
   it('shows larger marker when selected', () => {
@@ -233,7 +233,7 @@ describe('ParkingMarker', () => {
     );
 
     const markerElement = document.querySelector('.leaflet-marker-icon');
-    expect(markerElement?.innerHTML).toContain('#22c55e'); // Should be green (available)
+    expect(markerElement?.innerHTML).toContain('#059669'); // Should be green (available)
   });
 
   // Test the helper functions directly since Leaflet interactions are complex in JSDOM

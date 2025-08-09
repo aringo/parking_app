@@ -90,12 +90,16 @@
     /* Fix mobile viewport issues */
     height: 100vh;
     height: -webkit-fill-available;
+    /* Prevent overscroll bounce on iOS */
+    overscroll-behavior: none;
   }
   
   .mainContent {
     flex-direction: column;
     /* Improve touch scrolling */
     -webkit-overflow-scrolling: touch;
+    /* Prevent scroll chaining */
+    overscroll-behavior: contain;
   }
   
   .infoPanel {
@@ -116,10 +120,20 @@
     will-change: transform;
     /* Add safe area padding for devices with notches */
     padding-bottom: env(safe-area-inset-bottom);
+    /* Improve touch interaction */
+    touch-action: pan-y;
+    /* Add backdrop for better visibility */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
   }
   
   .infoPanel.expanded {
     transform: translateY(0);
+    /* Full opacity when expanded */
+    background: var(--background-color);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
   
   .searchContainer {
@@ -131,6 +145,8 @@
     padding: 8px;
     /* Ensure search is above map controls */
     z-index: 1001;
+    /* Improve touch interaction */
+    touch-action: manipulation;
   }
   
   .refreshContainer {
@@ -138,6 +154,8 @@
     right: 10px;
     width: auto;
     max-width: 200px;
+    /* Improve touch interaction */
+    touch-action: manipulation;
   }
   
   .mobileToggle {
@@ -148,6 +166,20 @@
     bottom: max(20px, env(safe-area-inset-bottom));
     /* Improve touch feedback */
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    /* Better touch interaction */
+    touch-action: manipulation;
+    /* Ensure minimum touch target size */
+    min-width: 56px;
+    min-height: 56px;
+    /* Add haptic feedback on supported devices */
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  .mobileToggle:active {
+    /* Provide visual feedback on touch */
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
   }
   
   /* Optimize for mobile landscape */
@@ -159,12 +191,37 @@
     }
     
     .searchContainer {
-      top: 5px;
+      top: max(5px, env(safe-area-inset-top));
       padding: 6px;
     }
     
     .refreshContainer {
-      top: 50px;
+      top: max(50px, calc(env(safe-area-inset-top) + 40px));
+    }
+    
+    .mobileToggle {
+      bottom: max(15px, env(safe-area-inset-bottom));
+      width: 48px;
+      height: 48px;
+    }
+  }
+  
+  /* Optimize for very small screens */
+  @media (max-width: 320px) {
+    .searchContainer {
+      left: 5px;
+      right: 5px;
+      padding: 6px;
+    }
+    
+    .refreshContainer {
+      right: 5px;
+      max-width: 180px;
+    }
+    
+    .mobileToggle {
+      right: 15px;
+      bottom: max(15px, env(safe-area-inset-bottom));
     }
   }
 }
@@ -206,6 +263,139 @@
 @media (prefers-reduced-motion: reduce) {
   .infoPanel,
   .mobileToggle {
+    transition: none;
+  }
+}/*
+ Error handling and offline states */
+.errorFallback {
+  padding: 0.5rem;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.simpleRefreshButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.simpleRefreshButton:hover {
+  background-color: #0056b3;
+}
+
+.networkBanner,
+.errorBanner {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.networkBanner {
+  background-color: rgba(255, 193, 7, 0.95);
+  color: #856404;
+  border: 1px solid rgba(255, 193, 7, 0.5);
+}
+
+.errorBanner {
+  background-color: rgba(248, 215, 218, 0.95);
+  color: #721c24;
+  border: 1px solid rgba(245, 198, 203, 0.5);
+}
+
+.offlineIcon,
+.errorIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.retryButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background-color 0.2s ease;
+}
+
+.retryButton:hover {
+  background-color: #c82333;
+}
+
+.infoPanelError {
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.infoPanelError h3 {
+  margin: 0 0 0.5rem 0;
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.infoPanelError p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Mobile responsive adjustments for error states */
+@media (max-width: 768px) {
+  .networkBanner,
+  .errorBanner {
+    top: max(60px, calc(env(safe-area-inset-top) + 50px));
+    left: 10px;
+    right: 10px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+  
+  .retryButton {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .infoPanelError {
+    padding: 1rem;
+  }
+  
+  .infoPanelError h3 {
+    font-size: 1rem;
+  }
+  
+  .infoPanelError p {
+    font-size: 0.875rem;
+  }
+}
+
+/* Reduced motion support for error states */
+@media (prefers-reduced-motion: reduce) {
+  .simpleRefreshButton,
+  .retryButton {
     transition: none;
   }
 }

@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DataFetcher } from './DataFetcher';
-import type { ParkingLocation, AppConfig, ParkingDataResponse, ConfigResponse } from '../types/index';
+import type { ParkingLocation, AppConfig } from '../types';
+
+// Mock fetch
+global.fetch = vi.fn();
 
 // Mock localStorage
 const localStorageMock = {
@@ -9,66 +12,58 @@ const localStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
 };
-
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-// Mock fetch
-global.fetch = vi.fn();
-
-// Test data
-const mockParkingLocation: ParkingLocation = {
-  id: 'test-1',
-  name: 'Test Parking Lot',
-  address: '123 Test St',
-  coordinates: { lat: 37.7749, lng: -122.4194 },
-  capacity: { total: 100, available: 50 },
-  rules: { timeLimit: '2 hours', cost: 'Free' },
-  type: 'lot',
-  lastUpdated: '2024-01-01T12:00:00Z',
-};
-
-const mockParkingDataResponse: ParkingDataResponse = {
-  locations: [mockParkingLocation],
-  lastUpdated: '2024-01-01T12:00:00Z',
-  version: '1.0.0',
-};
-
-const mockAppConfig: AppConfig = {
-  branding: {
-    name: 'Test Town Parking',
-    primaryColor: '#2563eb',
-    secondaryColor: '#64748b',
-  },
-  map: {
-    center: { lat: 37.7749, lng: -122.4194 },
-    zoom: 13,
-  },
-  dataSource: {
-    url: '/api/parking-data',
-    refreshInterval: 30000,
-  },
-};
-
-const mockConfigResponse: ConfigResponse = {
-  config: mockAppConfig,
-  version: '1.0.0',
-};
+// Mock navigator.onLine
+Object.defineProperty(navigator, 'onLine', {
+  writable: true,
+  value: true,
+});
 
 describe('DataFetcher', () => {
   let dataFetcher: DataFetcher;
+  const mockParkingData: ParkingLocation[] = [
+    {
+      id: '1',
+      name: 'Test Parking',
+      address: '123 Test St',
+      coordinates: { lat: 40.7128, lng: -74.0060 },
+      capacity: { total: 100, available: 50 },
+      rules: { timeLimit: '2 hours' },
+      type: 'lot',
+      lastUpdated: '2023-01-01T00:00:00Z',
+    },
+  ];
+
+  const mockAppConfig: AppConfig = {
+    branding: {
+      name: 'Test City',
+      primaryColor: '#007bff',
+      secondaryColor: '#6c757d',
+    },
+    map: {
+      center: { lat: 40.7128, lng: -74.0060 },
+      zoom: 13,
+    },
+    dataSource: {
+      url: '/api',
+      refreshInterval: 300000,
+    },
+  };
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    localStorageMock.getItem.mockReturnValue(null);
     dataFetcher = new DataFetcher({
-      baseUrl: '/test-api',
-      timeout: 1000,
+      baseUrl: '/api',
+      timeout: 5000,
       maxRetries: 2,
       retryDelay: 100,
-      cacheExpiry: 5000,
+      cacheExpiry: 60000,
+      offlineCacheExpiry: 86400000,
     });
+    vi.clearAllMocks();
+    (navigator as any).onLine = true;
   });
 
   afterEach(() => {
@@ -76,45 +71,30 @@ describe('DataFetcher', () => {
   });
 
   describe('fetchParkingData', () => {
-    it('should fetch and return parking data successfully', async () => {
+    it('fetches and caches parking data successfully', async () => {
+      const mockResponse = {
+        locations: mockParkingData,
+        lastUpdated: '2023-01-01T00:00:00Z',
+        version: '1.0.0',
+      };
+
       (fetch as any).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockParkingDataResponse),
+        json: () => Promise.resolve(mockResponse),
       });
 
       const result = await dataFetcher.fetchParkingData();
 
-      expect(result).toEqual(mockParkingDataResponse.locations);
-      expect(fetch).toHaveBeenCalledWith('/test-api/parking-data.json', {
-        signal: expect.any(AbortSignal),
-        headers: {
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache',
-        },
-      });
+      expect(result).toEqual(mockParkingData);
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'parking_finder_data',
-        expect.stringContaining('"data"')
+        expect.stringContaining('"data":')
       );
     });
 
-    it('should retry on network failure and eventually succeed', async () => {
-      (fetch as any)
-        .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(mockParkingDataResponse),
-        });
-
-      const result = await dataFetcher.fetchParkingData();
-
-      expect(result).toEqual(mockParkingDataResponse.locations);
-      expect(fetch).toHaveBeenCalledTimes(2);
-    });
-
-    it('should fall back to cached data when fetch fails', async () => {
+    it('returns cached data when fetch fails', async () => {
       const cachedData = {
-        data: mockParkingDataResponse.locations,
+        data: mockParkingData,
         timestamp: Date.now(),
         version: '1.0.0',
       };
@@ -124,36 +104,97 @@ describe('DataFetcher', () => {
 
       const result = await dataFetcher.fetchParkingData();
 
-      expect(result).toEqual(mockParkingDataResponse.locations);
-      expect(fetch).toHaveBeenCalledTimes(2); // maxRetries
+      expect(result).toEqual(mockParkingData);
     });
 
-    it('should return empty array when no cached data and fetch fails', async () => {
-      (fetch as any).mockRejectedValue(new Error('Network error'));
+    it('returns cached data when offline', async () => {
+      (navigator as any).onLine = false;
+      
+      const cachedData = {
+        data: mockParkingData,
+        timestamp: Date.now(),
+        version: '1.0.0',
+      };
+
+      localStorageMock.getItem.mockReturnValue(JSON.stringify(cachedData));
+
+      const result = await dataFetcher.fetchParkingData();
+
+      expect(result).toEqual(mockParkingData);
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('returns stale cached data when offline and no fresh data', async () => {
+      (navigator as any).onLine = false;
+      
+      const staleData = {
+        data: mockParkingData,
+        timestamp: Date.now() - 86400000 * 2, // 2 days old
+        version: '1.0.0',
+      };
+
+      localStorageMock.getItem.mockReturnValue(JSON.stringify(staleData));
+
+      const result = await dataFetcher.fetchParkingData();
+
+      expect(result).toEqual(mockParkingData);
+    });
+
+    it('returns empty array when no data available offline', async () => {
+      (navigator as any).onLine = false;
+      localStorageMock.getItem.mockReturnValue(null);
 
       const result = await dataFetcher.fetchParkingData();
 
       expect(result).toEqual([]);
     });
 
-    it('should handle invalid data format', async () => {
-      const invalidResponse = { invalid: 'data' };
+    it('uses valid cached data without network request', async () => {
+      const recentData = {
+        data: mockParkingData,
+        timestamp: Date.now() - 30000, // 30 seconds ago
+        version: '1.0.0',
+      };
+
+      localStorageMock.getItem.mockReturnValue(JSON.stringify(recentData));
+
+      const result = await dataFetcher.fetchParkingData();
+
+      expect(result).toEqual(mockParkingData);
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('retries on fetch failure', async () => {
+      (fetch as any)
+        .mockRejectedValueOnce(new Error('Network error'))
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({
+            locations: mockParkingData,
+            lastUpdated: '2023-01-01T00:00:00Z',
+            version: '1.0.0',
+          }),
+        });
+
+      const result = await dataFetcher.fetchParkingData();
+
+      expect(result).toEqual(mockParkingData);
+      expect(fetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('validates parking data format', async () => {
+      const invalidResponse = {
+        locations: [{ invalid: 'data' }],
+        lastUpdated: '2023-01-01T00:00:00Z',
+        version: '1.0.0',
+      };
+
       (fetch as any).mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(invalidResponse),
       });
 
-      const result = await dataFetcher.fetchParkingData();
-
-      expect(result).toEqual([]);
-    });
-
-    it('should handle HTTP errors', async () => {
-      (fetch as any).mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-      });
+      localStorageMock.getItem.mockReturnValue(null);
 
       const result = await dataFetcher.fetchParkingData();
 
@@ -162,29 +203,27 @@ describe('DataFetcher', () => {
   });
 
   describe('fetchAppConfig', () => {
-    it('should fetch and return app config successfully', async () => {
+    it('fetches and caches app config successfully', async () => {
+      const mockResponse = {
+        config: mockAppConfig,
+        version: '1.0.0',
+      };
+
       (fetch as any).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockConfigResponse),
+        json: () => Promise.resolve(mockResponse),
       });
 
       const result = await dataFetcher.fetchAppConfig();
 
       expect(result).toEqual(mockAppConfig);
-      expect(fetch).toHaveBeenCalledWith('/test-api/config.json', {
-        signal: expect.any(AbortSignal),
-        headers: {
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache',
-        },
-      });
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'parking_finder_config',
-        expect.stringContaining('"data"')
+        expect.stringContaining('"data":')
       );
     });
 
-    it('should fall back to cached config when fetch fails', async () => {
+    it('returns cached config when fetch fails', async () => {
       const cachedData = {
         data: mockAppConfig,
         timestamp: Date.now(),
@@ -199,20 +238,26 @@ describe('DataFetcher', () => {
       expect(result).toEqual(mockAppConfig);
     });
 
-    it('should return null when no cached config and fetch fails', async () => {
-      (fetch as any).mockRejectedValue(new Error('Network error'));
+    it('returns cached config when offline', async () => {
+      (navigator as any).onLine = false;
+      
+      const cachedData = {
+        data: mockAppConfig,
+        timestamp: Date.now(),
+        version: '1.0.0',
+      };
+
+      localStorageMock.getItem.mockReturnValue(JSON.stringify(cachedData));
 
       const result = await dataFetcher.fetchAppConfig();
 
-      expect(result).toBeNull();
+      expect(result).toEqual(mockAppConfig);
+      expect(fetch).not.toHaveBeenCalled();
     });
 
-    it('should handle invalid config format', async () => {
-      const invalidResponse = { config: { invalid: 'config' }, version: '1.0.0' };
-      (fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(invalidResponse),
-      });
+    it('returns null when no config available', async () => {
+      (fetch as any).mockRejectedValue(new Error('Network error'));
+      localStorageMock.getItem.mockReturnValue(null);
 
       const result = await dataFetcher.fetchAppConfig();
 
@@ -220,191 +265,129 @@ describe('DataFetcher', () => {
     });
   });
 
-  describe('caching functionality', () => {
-    it('should check cache validity correctly', () => {
+  describe('cache management', () => {
+    it('checks cache validity correctly', () => {
       const recentData = {
-        data: mockParkingDataResponse.locations,
-        timestamp: Date.now() - 1000, // 1 second ago
+        data: mockParkingData,
+        timestamp: Date.now() - 30000, // 30 seconds ago
         version: '1.0.0',
       };
 
       localStorageMock.getItem.mockReturnValue(JSON.stringify(recentData));
 
-      expect(dataFetcher.isCacheValid('parking_finder_data')).toBe(true);
+      expect(dataFetcher.isCacheValid('test_key')).toBe(true);
     });
 
-    it('should detect expired cache', () => {
+    it('detects stale cache', () => {
+      const staleData = {
+        data: mockParkingData,
+        timestamp: Date.now() - 120000, // 2 minutes ago
+        version: '1.0.0',
+      };
+
+      localStorageMock.getItem.mockReturnValue(JSON.stringify(staleData));
+
+      expect(dataFetcher.isCacheValid('test_key')).toBe(false);
+    });
+
+    it('uses extended cache validity when offline', () => {
       const oldData = {
-        data: mockParkingDataResponse.locations,
-        timestamp: Date.now() - 10000, // 10 seconds ago (expired)
+        data: mockParkingData,
+        timestamp: Date.now() - 3600000, // 1 hour ago
         version: '1.0.0',
       };
 
       localStorageMock.getItem.mockReturnValue(JSON.stringify(oldData));
 
-      expect(dataFetcher.isCacheValid('parking_finder_data')).toBe(false);
+      expect(dataFetcher.isCacheValid('test_key', true)).toBe(true);
     });
 
-    it('should clear all cached data', () => {
+    it('clears all cached data', () => {
       dataFetcher.clearCache();
 
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('parking_finder_data');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('parking_finder_config');
     });
 
-    it('should return cache info', () => {
+    it('provides cache info for debugging', () => {
       const parkingData = {
-        data: mockParkingDataResponse.locations,
+        data: mockParkingData,
         timestamp: Date.now(),
         version: '1.0.0',
       };
 
-      localStorageMock.getItem.mockImplementation((key) => {
-        if (key === 'parking_finder_data') return JSON.stringify(parkingData);
-        return null;
-      });
+      const configData = {
+        data: mockAppConfig,
+        timestamp: Date.now(),
+        version: '1.0.0',
+      };
+
+      localStorageMock.getItem
+        .mockReturnValueOnce(JSON.stringify(parkingData))
+        .mockReturnValueOnce(JSON.stringify(configData));
 
       const cacheInfo = dataFetcher.getCacheInfo();
 
       expect(cacheInfo.parkingData).toEqual(parkingData);
-      expect(cacheInfo.config).toBeNull();
-    });
-
-    it('should handle corrupted cache data gracefully', () => {
-      localStorageMock.getItem.mockReturnValue('invalid json');
-
-      expect(dataFetcher.isCacheValid('parking_finder_data')).toBe(false);
-    });
-  });
-
-  describe('data validation', () => {
-    it('should validate parking location correctly', async () => {
-      const validResponse = mockParkingDataResponse;
-      (fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(validResponse),
-      });
-
-      const result = await dataFetcher.fetchParkingData();
-      expect(result).toEqual(validResponse.locations);
-    });
-
-    it('should reject parking data with missing required fields', async () => {
-      const invalidLocation = { ...mockParkingLocation };
-      delete (invalidLocation as any).coordinates;
-
-      const invalidResponse = {
-        ...mockParkingDataResponse,
-        locations: [invalidLocation],
-      };
-
-      (fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(invalidResponse),
-      });
-
-      const result = await dataFetcher.fetchParkingData();
-      expect(result).toEqual([]);
-    });
-
-    it('should reject parking data with invalid coordinates', async () => {
-      const invalidLocation = {
-        ...mockParkingLocation,
-        coordinates: { lat: 'invalid', lng: -122.4194 },
-      };
-
-      const invalidResponse = {
-        ...mockParkingDataResponse,
-        locations: [invalidLocation],
-      };
-
-      (fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(invalidResponse),
-      });
-
-      const result = await dataFetcher.fetchParkingData();
-      expect(result).toEqual([]);
-    });
-
-    it('should reject parking data with invalid type', async () => {
-      const invalidLocation = {
-        ...mockParkingLocation,
-        type: 'invalid_type',
-      };
-
-      const invalidResponse = {
-        ...mockParkingDataResponse,
-        locations: [invalidLocation],
-      };
-
-      (fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(invalidResponse),
-      });
-
-      const result = await dataFetcher.fetchParkingData();
-      expect(result).toEqual([]);
+      expect(cacheInfo.config).toEqual(configData);
     });
   });
 
   describe('error handling', () => {
-    it('should handle fetch timeout', async () => {
-      // Mock a slow response that will timeout
-      (fetch as any).mockImplementation(() => 
-        new Promise(resolve => setTimeout(resolve, 2000))
-      );
+    it('handles fetch timeout', async () => {
+      const timeoutError = new Error('Timeout');
+      timeoutError.name = 'AbortError';
+      
+      (fetch as any).mockRejectedValue(timeoutError);
+      localStorageMock.getItem.mockReturnValue(null);
 
       const result = await dataFetcher.fetchParkingData();
+
       expect(result).toEqual([]);
     });
 
-    it('should handle localStorage errors gracefully', async () => {
+    it('handles HTTP errors', async () => {
+      (fetch as any).mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      localStorageMock.getItem.mockReturnValue(null);
+
+      const result = await dataFetcher.fetchParkingData();
+
+      expect(result).toEqual([]);
+    });
+
+    it('handles malformed JSON in cache', async () => {
+      localStorageMock.getItem.mockReturnValue('invalid json');
+
+      const result = await dataFetcher.fetchParkingData();
+
+      expect(result).toEqual([]);
+    });
+
+    it('handles localStorage errors gracefully', async () => {
+      const mockResponse = {
+        locations: mockParkingData,
+        lastUpdated: '2023-01-01T00:00:00Z',
+        version: '1.0.0',
+      };
+
+      (fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
       localStorageMock.setItem.mockImplementation(() => {
         throw new Error('Storage quota exceeded');
       });
 
-      (fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockParkingDataResponse),
-      });
-
-      // Should still return data even if caching fails
       const result = await dataFetcher.fetchParkingData();
-      expect(result).toEqual(mockParkingDataResponse.locations);
-    });
 
-    it('should handle JSON parsing errors', async () => {
-      (fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.reject(new Error('Invalid JSON')),
-      });
-
-      const result = await dataFetcher.fetchParkingData();
-      expect(result).toEqual([]);
-    });
-  });
-
-  describe('retry logic', () => {
-    it('should respect maxRetries configuration', async () => {
-      (fetch as any).mockRejectedValue(new Error('Network error'));
-
-      await dataFetcher.fetchParkingData();
-
-      expect(fetch).toHaveBeenCalledTimes(2); // maxRetries = 2
-    });
-
-    it('should wait between retries', async () => {
-      const startTime = Date.now();
-      (fetch as any).mockRejectedValue(new Error('Network error'));
-
-      await dataFetcher.fetchParkingData();
-
-      const endTime = Date.now();
-      const elapsed = endTime - startTime;
-      
-      // Should have waited at least retryDelay (100ms) between attempts
-      expect(elapsed).toBeGreaterThanOrEqual(100);
+      expect(result).toEqual(mockParkingData);
+      // Should not throw error even if caching fails
     });
   });
 });

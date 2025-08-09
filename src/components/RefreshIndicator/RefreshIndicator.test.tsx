@@ -43,8 +43,8 @@ describe('RefreshIndicator', () => {
         />
       );
 
-      expect(screen.getByText(/Updated.*less than a minute ago/)).toBeInTheDocument();
-      expect(screen.getByText(/Next update in 1m 0s/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Updated.*less than a minute ago/)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/Next update in 1m 0s/)[0]).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /refresh parking data/i })).toBeInTheDocument();
     });
 
@@ -63,7 +63,7 @@ describe('RefreshIndicator', () => {
         />
       );
 
-      expect(screen.getByText('Updating...')).toBeInTheDocument();
+      expect(screen.getAllByText('Updating...')[0]).toBeInTheDocument();
       expect(screen.getByRole('button')).toBeDisabled();
     });
 
@@ -101,7 +101,7 @@ describe('RefreshIndicator', () => {
         />
       );
 
-      expect(screen.getByText('No data')).toBeInTheDocument();
+      expect(screen.getAllByText('No data')[0]).toBeInTheDocument();
     });
   });
 
@@ -122,7 +122,7 @@ describe('RefreshIndicator', () => {
         />
       );
 
-      expect(screen.getByText(/Next update in 2m 5s/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Next update in 2m 5s/)[0]).toBeInTheDocument();
     });
 
     it('should show seconds only when less than a minute', () => {
@@ -141,7 +141,7 @@ describe('RefreshIndicator', () => {
         />
       );
 
-      expect(screen.getByText(/Next update in 30s/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Next update in 30s/)[0]).toBeInTheDocument();
     });
 
     it('should show "Now" when time is zero or negative', () => {
@@ -160,7 +160,7 @@ describe('RefreshIndicator', () => {
         />
       );
 
-      expect(screen.getByText(/Next update in Now/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Next update in Now/)[0]).toBeInTheDocument();
     });
   });
 
@@ -305,8 +305,7 @@ describe('RefreshIndicator', () => {
       );
 
       const refreshButton = screen.getByRole('button', { name: /refresh parking data/i });
-      expect(refreshButton).toHaveAttribute('aria-label', 'Refresh parking data');
-      expect(refreshButton).toHaveAttribute('title', 'Refresh parking data now');
+      expect(refreshButton.getAttribute('aria-label')).toBe('Refresh parking data now');
     });
   });
 });

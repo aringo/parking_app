@@ -157,8 +157,8 @@ describe('MapView Component', () => {
     
     render(<MapView {...emptyProps} />);
     
-    const mapContainer = screen.getByTestId('map-container');
-    expect(mapContainer).toBeInTheDocument();
+    // Should show loading state when no data and online
+    expect(screen.getByText('Loading parking data...')).toBeInTheDocument();
   });
 
   it('renders with selected location', () => {

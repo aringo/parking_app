@@ -42,19 +42,25 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectedLocation, onDirectionsCli
     return (
       <div className={styles.infoPanelContainer}>
         <div className={styles.mobileHeader}>
-          <div className={styles.dragHandle}></div>
+          <div 
+            className={styles.dragHandle}
+            aria-label="Drag handle for mobile panel"
+            role="button"
+            tabIndex={0}
+          ></div>
           {onClose && (
             <button 
               className={styles.closeButton}
               onClick={onClose}
-              aria-label="Close info panel"
+              aria-label="Close parking information panel"
+              type="button"
             >
-              ×
+              <span aria-hidden="true">×</span>
             </button>
           )}
         </div>
         <div className={styles.emptyState}>
-          <div className={styles.emptyStateIcon}>🅿️</div>
+          <div className={styles.emptyStateIcon} aria-hidden="true">🅿️</div>
           <h3 className={styles.emptyStateTitle}>Select a Parking Location</h3>
           <p className={styles.emptyStateDescription}>
             Click on any parking marker on the map to view detailed information about 
@@ -63,10 +69,10 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectedLocation, onDirectionsCli
           <div className={styles.generalInfo}>
             <h4>General Parking Information</h4>
             <ul>
-              <li>Green markers indicate good availability</li>
-              <li>Yellow markers indicate limited spaces</li>
+              <li>Green markers indicate good availability (more than 25% spaces)</li>
+              <li>Yellow markers indicate limited spaces (25% or fewer spaces)</li>
               <li>Red markers indicate full or no availability</li>
-              <li>Click any marker for detailed information</li>
+              <li>Click any marker for detailed information and directions</li>
             </ul>
           </div>
         </div>
@@ -80,38 +86,55 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectedLocation, onDirectionsCli
   return (
     <div className={styles.infoPanelContainer}>
       <div className={styles.mobileHeader}>
-        <div className={styles.dragHandle}></div>
+        <div 
+          className={styles.dragHandle}
+          aria-label="Drag handle for mobile panel"
+          role="button"
+          tabIndex={0}
+        ></div>
         {onClose && (
           <button 
             className={styles.closeButton}
             onClick={onClose}
-            aria-label="Close info panel"
+            aria-label="Close parking information panel"
+            type="button"
           >
-            ×
+            <span aria-hidden="true">×</span>
           </button>
         )}
       </div>
       <div className={styles.header}>
-        <h2 className={styles.locationName}>{selectedLocation.name}</h2>
-        <div className={styles.locationType}>
+        <h2 className={styles.locationName} id="location-name">
+          {selectedLocation.name}
+        </h2>
+        <div 
+          className={styles.locationType}
+          aria-label={`Parking type: ${selectedLocation.type}`}
+        >
           {selectedLocation.type.charAt(0).toUpperCase() + selectedLocation.type.slice(1)}
         </div>
       </div>
 
       <div className={styles.address}>
-        <span className={styles.addressIcon}>📍</span>
-        {selectedLocation.address}
+        <span className={styles.addressIcon} aria-hidden="true">📍</span>
+        <span aria-label={`Address: ${selectedLocation.address}`}>
+          {selectedLocation.address}
+        </span>
       </div>
 
       <div className={styles.capacitySection}>
-        <h3 className={styles.sectionTitle}>Availability</h3>
+        <h3 className={styles.sectionTitle} id="availability-section">Availability</h3>
         <div className={styles.capacityDisplay}>
           <div 
             className={styles.availabilityIndicator}
             style={{ backgroundColor: availabilityColor }}
+            role="status"
+            aria-label={`${selectedLocation.capacity.available} spaces available out of ${selectedLocation.capacity.total} total spaces. Status: ${availabilityStatus}`}
           >
-            <span className={styles.availableCount}>{selectedLocation.capacity.available}</span>
-            <span className={styles.availableLabel}>Available</span>
+            <span className={styles.availableCount} aria-hidden="true">
+              {selectedLocation.capacity.available}
+            </span>
+            <span className={styles.availableLabel} aria-hidden="true">Available</span>
           </div>
           <div className={styles.capacityDetails}>
             <div className={styles.capacityRow}>
@@ -133,34 +156,40 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectedLocation, onDirectionsCli
       </div>
 
       <div className={styles.rulesSection}>
-        <h3 className={styles.sectionTitle}>Parking Rules</h3>
-        <div className={styles.rulesGrid}>
+        <h3 className={styles.sectionTitle} id="rules-section">Parking Rules</h3>
+        <div className={styles.rulesGrid} role="list">
           {selectedLocation.rules.timeLimit && (
-            <div className={styles.ruleItem}>
-              <span className={styles.ruleIcon}>⏰</span>
+            <div className={styles.ruleItem} role="listitem">
+              <span className={styles.ruleIcon} aria-hidden="true">⏰</span>
               <div>
                 <div className={styles.ruleLabel}>Time Limit</div>
-                <div className={styles.ruleValue}>{selectedLocation.rules.timeLimit}</div>
+                <div className={styles.ruleValue} aria-label={`Time limit: ${selectedLocation.rules.timeLimit}`}>
+                  {selectedLocation.rules.timeLimit}
+                </div>
               </div>
             </div>
           )}
           
           {selectedLocation.rules.cost && (
-            <div className={styles.ruleItem}>
-              <span className={styles.ruleIcon}>💰</span>
+            <div className={styles.ruleItem} role="listitem">
+              <span className={styles.ruleIcon} aria-hidden="true">💰</span>
               <div>
                 <div className={styles.ruleLabel}>Cost</div>
-                <div className={styles.ruleValue}>{selectedLocation.rules.cost}</div>
+                <div className={styles.ruleValue} aria-label={`Parking cost: ${selectedLocation.rules.cost}`}>
+                  {selectedLocation.rules.cost}
+                </div>
               </div>
             </div>
           )}
           
           {selectedLocation.rules.hours && (
-            <div className={styles.ruleItem}>
-              <span className={styles.ruleIcon}>🕐</span>
+            <div className={styles.ruleItem} role="listitem">
+              <span className={styles.ruleIcon} aria-hidden="true">🕐</span>
               <div>
                 <div className={styles.ruleLabel}>Hours</div>
-                <div className={styles.ruleValue}>{selectedLocation.rules.hours}</div>
+                <div className={styles.ruleValue} aria-label={`Operating hours: ${selectedLocation.rules.hours}`}>
+                  {selectedLocation.rules.hours}
+                </div>
               </div>
             </div>
           )}
@@ -184,14 +213,19 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ selectedLocation, onDirectionsCli
         <button 
           className={styles.directionsButton}
           onClick={handleDirectionsClick}
-          aria-label={`Get directions to ${selectedLocation.name}`}
+          aria-label={`Get directions to ${selectedLocation.name} at ${selectedLocation.address}`}
+          type="button"
         >
-          <span className={styles.directionsIcon}>🧭</span>
+          <span className={styles.directionsIcon} aria-hidden="true">🧭</span>
           Get Directions
         </button>
       </div>
 
-      <div className={styles.lastUpdated}>
+      <div 
+        className={styles.lastUpdated}
+        role="status"
+        aria-label={`Data last updated: ${formatLastUpdated(selectedLocation.lastUpdated)}`}
+      >
         Last updated: {formatLastUpdated(selectedLocation.lastUpdated)}
       </div>
     </div>

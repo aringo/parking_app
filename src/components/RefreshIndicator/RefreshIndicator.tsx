@@ -60,11 +60,19 @@ export function RefreshIndicator({
   };
 
   return (
-    <div className={`${styles.refreshIndicator} ${getStatusClass()}`}>
+    <div 
+      className={`${styles.refreshIndicator} ${getStatusClass()}`}
+      role="status"
+      aria-live="polite"
+      aria-label="Data refresh status"
+    >
       <div className={styles.status}>
-        <div className={styles.statusIcon}>
+        <div className={styles.statusIcon} aria-hidden="true">
           {refreshState.isRefreshing ? (
-            <div className={styles.spinner} />
+            <div 
+              className={styles.spinner}
+              aria-label="Refreshing data"
+            />
           ) : refreshState.error ? (
             <span className={styles.errorIcon}>⚠️</span>
           ) : (
@@ -93,13 +101,27 @@ export function RefreshIndicator({
         className={styles.refreshButton}
         onClick={onRefresh}
         disabled={refreshState.isRefreshing}
-        title="Refresh parking data now"
-        aria-label="Refresh parking data"
+        aria-label={refreshState.isRefreshing ? "Refreshing parking data..." : "Refresh parking data now"}
+        aria-describedby="refresh-status"
+        type="button"
       >
-        <span className={`${styles.refreshIcon} ${refreshState.isRefreshing ? styles.spinning : ''}`}>
+        <span 
+          className={`${styles.refreshIcon} ${refreshState.isRefreshing ? styles.spinning : ''}`}
+          aria-hidden="true"
+        >
           ↻
         </span>
+        <span className="sr-only">
+          {refreshState.isRefreshing ? "Refreshing..." : "Refresh"}
+        </span>
       </button>
+      
+      <div id="refresh-status" className="sr-only" aria-live="polite">
+        {getStatusText()}
+        {refreshState.nextRefresh && !refreshState.isRefreshing && 
+          ` Next update in ${formatTimeUntilRefresh(timeUntilNextRefresh)}`
+        }
+      </div>
     </div>
   );
 }
