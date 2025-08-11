@@ -17,7 +17,9 @@
     "test:all": "npm run test:run && npm run test:integration && npm run test:e2e",
     "deploy:test": "npm run lint && npm run test:all && npm run build",
     "deploy:preview": "npm run build && npm run preview",
-    "deploy:check": "node scripts/deployment-check.js"
+    "deploy:check": "node scripts/deployment-check.js",
+    "docs:create": "node scripts/create-doc.cjs",
+    "docs:maintenance": "node scripts/docs-maintenance-check.cjs"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

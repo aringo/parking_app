@@ -41,6 +41,16 @@ npm run dev
 - **[Admin Setup Guide](./ADMIN_SETUP_GUIDE.md)** - Setting up and managing the system
 - **[Developer Guide](./DEVELOPER_GUIDE.md)** - Technical documentation for developers
 
+### Documentation Maintenance
+
+- **[Maintenance Overview](./MAINTENANCE_OVERVIEW.md)** - Complete maintenance system overview and getting started guide
+- **[Maintenance Procedures](./MAINTENANCE_PROCEDURES.md)** - Complete guidelines for maintaining documentation quality and structure
+- **[Maintenance Checklist](./MAINTENANCE_CHECKLIST.md)** - Ready-to-use checklists for regular maintenance tasks
+- **[Maintenance Summary](./MAINTENANCE_SUMMARY.md)** - Quick reference for maintainers with tools and procedures
+- **[Style Guide](./STYLE_GUIDE.md)** - Formatting and writing standards
+- **[Quality Guide](./QUALITY_GUIDE.md)** - Automated quality checks and tools
+- **[Templates](./templates/README.md)** - Standardized templates for new documentation
+
 ## Technology Stack
 
 - **Frontend**: React 19, TypeScript, Vite
