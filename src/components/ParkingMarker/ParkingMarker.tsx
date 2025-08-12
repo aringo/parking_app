@@ -105,8 +105,8 @@ const ParkingMarker: React.FC<ParkingMarkerProps> = ({
         }
       }}
       aria-label={`${location.name} parking location. ${location.capacity.available} of ${location.capacity.total} spaces available. Status: ${availabilityStatus}. Click for details.`}
-      role="button"
-      tabIndex={0}
+
+
     >
       <Tooltip 
         direction="top" 

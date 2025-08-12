@@ -39,18 +39,18 @@ const MapView: React.FC<MapViewProps> = ({
     };
 
     // Listen for tile loading errors
-    const handleTileError = () => {
-      if (!networkStatus.isOnline) {
-        setMapError('No internet connection');
-        setShowFallback(true);
-      } else {
-        setMapError('Map tiles failed to load');
-        // Don't immediately show fallback for tile errors, give it a chance to recover
-        setTimeout(() => {
-          setShowFallback(true);
-        }, 5000);
-      }
-    };
+    // const handleTileError = () => {
+    //   if (!networkStatus.isOnline) {
+    //     setMapError('No internet connection');
+    //     setShowFallback(true);
+    //   } else {
+    //     setMapError('Map tiles failed to load');
+    //     // Don't immediately show fallback for tile errors, give it a chance to recover
+    //     setTimeout(() => {
+    //       setShowFallback(true);
+    //     }, 5000);
+    //   }
+    // };
 
     // Add global error listeners
     window.addEventListener('error', handleMapError);
@@ -152,14 +152,14 @@ const MapView: React.FC<MapViewProps> = ({
           zoomAnimation={!performanceSettings?.reduceAnimations}
           keyboard={true}
           boxZoom={false}
-          role="application"
+
           aria-label="Interactive parking map"
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             errorTileUrl="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNHB4IiBmaWxsPSIjNmM3NTdkIj5UaWxlIE5vdCBBdmFpbGFibGU8L3RleHQ+PC9zdmc+"
-            onError={() => handleTileError()}
+
           />
           {locationsToDisplay.map((location) => (
             <ParkingMarker

@@ -1,69 +1,100 @@
-# React + TypeScript + Vite
+# Parking Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, accessible web application that helps users find available public parking spaces in small coastal festival towns. Built with React, TypeScript, and Leaflet.js.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Interactive Map**: Real-time parking availability displayed on an OpenStreetMap-based interface
+- **Search Functionality**: Find parking by location name, address, or type
+- **Detailed Information**: View capacity, rules, costs, and time limits for each parking location
+- **Mobile Optimized**: Responsive design that works on all devices
+- **Offline Support**: Cached data ensures functionality without internet connection
+- **Accessibility**: WCAG 2.1 AA compliant with screen reader and keyboard navigation support
+- **Auto-refresh**: Parking data updates automatically every 5 minutes
+- **Admin Interface**: Simple Google Forms integration for data management
 
-## Expanding the ESLint configuration
+## Quick Start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### For Users
+1. Visit your town's Parking Finder URL
+2. Browse the map to see available parking locations
+3. Click markers for detailed information
+4. Use the search bar to find specific locations
+5. Click "Get Directions" to navigate to parking spots
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### For Administrators
+1. Use the provided Google Forms to update parking data
+2. Changes appear on the website within 5 minutes
+3. Customize branding through the configuration form
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### For Developers
+```bash
+git clone <repository-url>
+cd parking-finder
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Technology Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Frontend**: React 19, TypeScript, Vite
+- **Mapping**: Leaflet.js, React-Leaflet, OpenStreetMap
+- **Styling**: CSS Modules
+- **Testing**: Vitest, React Testing Library
+- **CI/CD**: GitHub Actions
+- **Hosting**: GitHub Pages, Netlify, Vercel compatible
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run tests
+npm run test
+
+# Run linting
+npm run lint
 ```
+
+## Documentation
+
+Complete documentation is available in the `/docs` folder:
+
+- **[User Guide](./docs/USER_GUIDE.md)** - How to use the application
+- **[Admin Setup Guide](./docs/ADMIN_SETUP_GUIDE.md)** - Setting up and managing the system
+- **[Developer Guide](./docs/DEVELOPER_GUIDE.md)** - Technical documentation for developers
+
+### Documentation Maintenance
+
+- **[Maintenance Overview](./docs/MAINTENANCE_OVERVIEW.md)** - Complete maintenance system overview
+- **[Maintenance Procedures](./docs/MAINTENANCE_PROCEDURES.md)** - Complete guidelines for maintaining documentation
+- **[Style Guide](./docs/STYLE_GUIDE.md)** - Formatting and writing standards
+- **[Quality Guide](./docs/QUALITY_GUIDE.md)** - Automated quality checks and tools
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests for new functionality
+4. Ensure all tests pass
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Support
+
+- Check the documentation in the `/docs` folder
+- Open an issue on GitHub for bugs or feature requests
+- Contact your local administrator for data-related questions

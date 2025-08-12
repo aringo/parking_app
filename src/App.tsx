@@ -30,7 +30,7 @@ function AppContent() {
   const [isInfoPanelExpanded, setIsInfoPanelExpanded] = useState(false);
 
   // Keyboard navigation state
-  const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
+  const [, setFocusedElementId] = useState<string | null>(null);
 
   // Performance optimization for mobile and slow connections
   const { performanceSettings } = usePerformanceOptimization();
