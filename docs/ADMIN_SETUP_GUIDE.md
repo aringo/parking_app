@@ -102,8 +102,7 @@ Configure the data source URLs in `public/config.json`:
   }
 }
 ```
-## Da
-ily Operations
+## Daily Operations
 
 ### Updating Parking Data
 
