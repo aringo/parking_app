@@ -1,21 +1,12 @@
-name: Simple Deploy
+name: Build Only
 
 on:
   push:
     branches: [ main, master ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     
     steps:
@@ -33,14 +24,5 @@ jobs:
     - name: Build application
       run: npm run build
         
-    - name: Upload build artifacts
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: dist
-
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
-      
-    - name: Deployment complete
-      run: echo "✅ Deployment successful to ${{ steps.deployment.outputs.page_url }}"
+    - name: Build complete
+      run: echo "✅ Build successful! Your app is ready for deployment."
