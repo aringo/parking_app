@@ -35,7 +35,11 @@ export const BrandingHeader: React.FC<BrandingHeaderProps> = ({ className }) => 
             }}
           />
         )}
-        <h1 className={styles.title}>{branding.name} Parking Finder</h1>
+        <h1 className={styles.title}>
+          {branding.name.toLowerCase().includes('parking') 
+            ? branding.name 
+            : `${branding.name} Parking Finder`}
+        </h1>
       </div>
     </header>
   );
