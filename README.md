@@ -29,7 +29,7 @@ A modern, accessible web application that helps users find available public park
 
 ### For Developers
 ```bash
-git clone <repository-url>
+git clone https://github.com/aringo/parking_app.git
 cd parking-finder
 npm install
 npm run dev
